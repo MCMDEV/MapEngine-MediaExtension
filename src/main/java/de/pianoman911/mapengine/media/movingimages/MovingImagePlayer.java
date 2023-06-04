@@ -17,6 +17,7 @@ public class MovingImagePlayer {
     private final Queue<FullSpacedColorBuffer> buffer;
     private boolean running;
     private boolean bufferBuilt;
+    private boolean ended;
 
     public MovingImagePlayer(FrameSource source, int bufferSize, IDrawingSpace drawingSpace) {
         this.source = source;
@@ -26,10 +27,13 @@ public class MovingImagePlayer {
 
         EXECUTOR.execute(() -> {
             while (!Thread.interrupted()) {
-                if (running && !source.ended()) {
+                if (running && !ended) {
                     FullSpacedColorBuffer frame = source.next();
                     if (frame != null) {
                         buffer.add(frame);
+                    }   else   {
+                        ended = true;
+                        return;
                     }
 
                     if (bufferBuilt || buffer.size() >= bufferSize) {
@@ -72,6 +76,10 @@ public class MovingImagePlayer {
 
     public void stop() {
         running = false;
+    }
+
+    public boolean ended() {
+        return ended;
     }
 
     public void restart() {

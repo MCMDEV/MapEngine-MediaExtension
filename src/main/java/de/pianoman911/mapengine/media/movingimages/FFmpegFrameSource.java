@@ -97,7 +97,7 @@ public class FFmpegFrameSource implements FrameSource {
 
     @Override
     public boolean ended() {
-        return grabber.isCloseInputStream();
+        return player.ended();
     }
 
     @Override
